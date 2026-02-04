@@ -18,8 +18,9 @@ const authenticateToken = async (req, res, next) => {
     // Vérifier et décoder le token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    // Récupérer l'utilisateur depuis MongoDB (sans le password)
-    const user = await User.findById(decoded.userId).select('-password');
+    // Récupérer l'utilisateur depuis MongoDB
+    const db = req.app.locals.db;
+    const user = await User.findUserById(db, decoded.userId);
 
     if (!user) {
       return res.status(404).json({

@@ -75,11 +75,79 @@ async function createUserFromGoogle(db, { googleId, email, name, picture }) {
   };
 }
 
+// ============================================
+// Fonctions Helper pour Discord OAuth
+// ============================================
+
+// Trouver un utilisateur par son Discord ID
+async function findUserByDiscordId(db, discordId) {
+  return await db.collection('users').findOne({ discordId });
+}
+
+// Créer un utilisateur depuis Discord OAuth
+async function createUserFromDiscord(db, { discordId, email, username, avatar }) {
+  const result = await db.collection('users').insertOne({
+    discordId,
+    email: email ? email.toLowerCase() : null,
+    name: username,
+    picture: avatar ? `https://cdn.discordapp.com/avatars/${discordId}/${avatar}.png` : null,
+    provider: 'discord',
+    createdAt: new Date()
+    // Pas de champ password pour les utilisateurs OAuth
+  });
+
+  return {
+    _id: result.insertedId,
+    discordId,
+    email: email ? email.toLowerCase() : null,
+    name: username,
+    picture: avatar ? `https://cdn.discordapp.com/avatars/${discordId}/${avatar}.png` : null,
+    provider: 'discord',
+    createdAt: new Date()
+  };
+}
+
+// ============================================
+// Fonctions Helper pour GitHub OAuth
+// ============================================
+
+// Trouver un utilisateur par son GitHub ID
+async function findUserByGithubId(db, githubId) {
+  return await db.collection('users').findOne({ githubId });
+}
+
+// Créer un utilisateur depuis GitHub OAuth
+async function createUserFromGithub(db, { githubId, email, username, avatar }) {
+  const result = await db.collection('users').insertOne({
+    githubId,
+    email: email ? email.toLowerCase() : null,
+    name: username,
+    picture: avatar,
+    provider: 'github',
+    createdAt: new Date()
+    // Pas de champ password pour les utilisateurs OAuth
+  });
+
+  return {
+    _id: result.insertedId,
+    githubId,
+    email: email ? email.toLowerCase() : null,
+    name: username,
+    picture: avatar,
+    provider: 'github',
+    createdAt: new Date()
+  };
+}
+
 module.exports = {
   findUserByEmail,
   findUserById,
   createUser,
   comparePassword,
   findUserByGoogleId,
-  createUserFromGoogle
+  createUserFromGoogle,
+  findUserByDiscordId,
+  createUserFromDiscord,
+  findUserByGithubId,
+  createUserFromGithub
 };
