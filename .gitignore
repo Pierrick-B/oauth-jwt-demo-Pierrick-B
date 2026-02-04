@@ -1,0 +1,5 @@
+.github/
+guide.md
+backend/.env
+frontend/.env
+node_modules/
