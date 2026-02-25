@@ -193,4 +193,15 @@ router.get('/github/callback', passport.authenticate('github', { session: false,
   }
 });
 
+router.get('/microsoft', passport.authenticate('microsoft', { session: false }));
+
+router.get('/microsoft/callback', passport.authenticate('microsoft', { session: false, failureRedirect: `${process.env.FRONTEND_URL}/login?error=microsoft_auth_failed` }), (req, res) => {
+  try {
+    const token = generateToken(req.user._id);
+    res.redirect(`${process.env.FRONTEND_URL}/auth/callback?token=${token}`);
+  } catch (error) {
+    res.redirect(`${process.env.FRONTEND_URL}/login?error=token_generation_failed`);
+  }
+});
+
 module.exports = router;

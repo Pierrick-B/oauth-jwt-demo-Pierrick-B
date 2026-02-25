@@ -65,6 +65,16 @@
       Se connecter avec GitHub
     </button>
 
+    <button @click="signInWithMicrosoft" type="button" class="microsoft-btn">
+      <svg class="microsoft-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <rect x="3" y="3" width="8" height="8" fill="#f35325"/>
+        <rect x="13" y="3" width="8" height="8" fill="#81bc06"/>
+        <rect x="3" y="13" width="8" height="8" fill="#05a6f0"/>
+        <rect x="13" y="13" width="8" height="8" fill="#ffba08"/>
+      </svg>
+      Se connecter avec Microsoft
+    </button>
+
     <div class="jwt-info">
       <h3>💡 Démo JWT</h3>
       <p>
@@ -101,6 +111,8 @@ export default {
       this.error = 'Échec de l\'authentification Discord'
     } else if (error === 'github_auth_failed') {
       this.error = 'Échec de l\'authentification GitHub'
+    } else if (error === 'microsoft_auth_failed') {
+      this.error = 'Échec de l\'authentification Microsoft'
     } else if (error === 'token_generation_failed') {
       this.error = 'Erreur lors de la génération du token'
     }
@@ -136,6 +148,10 @@ export default {
     signInWithGithub() {
       // Redirection vers le backend qui initie OAuth
       window.location.href = `${import.meta.env.VITE_API_URL}/auth/github`
+    },
+    signInWithMicrosoft() {
+      // Redirection vers le backend qui initie OAuth
+      window.location.href = `${import.meta.env.VITE_API_URL}/auth/microsoft`
     }
   }
 }
@@ -227,6 +243,35 @@ export default {
   width: 20px;
   height: 20px;
   display: inline-block;
+}
+
+.microsoft-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1.5rem;
+  background: #2f2f2f;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  margin-top: 0.5rem;
+}
+
+.microsoft-btn:hover {
+  background: #1f1f1f;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.microsoft-icon {
+  width: 20px;
+  height: 20px;
 }
 
 .jwt-info {

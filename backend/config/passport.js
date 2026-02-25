@@ -2,7 +2,8 @@ const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const DiscordStrategy = require('discord-strategy').Strategy;
 const GitHubStrategy = require('passport-github2').Strategy;
-const { findUserByGoogleId, createUserFromGoogle, findUserByDiscordId, createUserFromDiscord, findUserByGithubId, createUserFromGithub } = require('../models/User');
+const MicrosoftStrategy = require('passport-microsoft').Strategy;
+const { findUserByGoogleId, createUserFromGoogle, findUserByDiscordId, createUserFromDiscord, findUserByGithubId, createUserFromGithub, findUserByMicrosoftId, createUserFromMicrosoft } = require('../models/User');
 
 passport.use(new GoogleStrategy({
   clientID: process.env.GOOGLE_CLIENT_ID,
@@ -67,6 +68,30 @@ passport.use(new GitHubStrategy({
         email: profile.emails[0].value,
         username: profile.username,
         avatar: profile.photos[0].value
+      });
+    }
+    done(null, user);
+  } catch (error) {
+    done(error, null);
+  }
+}));
+
+passport.use(new MicrosoftStrategy({
+  clientID: process.env.MICROSOFT_CLIENT_ID,
+  clientSecret: process.env.MICROSOFT_CLIENT_SECRET,
+  callbackURL: process.env.MICROSOFT_CALLBACK_URL,
+  scope: ['user.read'],
+  passReqToCallback: true
+}, async (req, accessToken, refreshToken, profile, done) => {
+  try {
+    const db = req.app.locals.db;
+    let user = await findUserByMicrosoftId(db, profile.id);
+    if (!user) {
+      user = await createUserFromMicrosoft(db, {
+        microsoftId: profile.id,
+        email: profile.emails?.[0]?.value,
+        name: profile.displayName,
+        picture: profile.photos?.[0]?.value
       });
     }
     done(null, user);

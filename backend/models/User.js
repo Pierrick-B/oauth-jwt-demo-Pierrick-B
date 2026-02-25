@@ -139,6 +139,38 @@ async function createUserFromGithub(db, { githubId, email, username, avatar }) {
   };
 }
 
+// ============================================
+// Fonctions Helper pour Microsoft OAuth
+// ============================================
+
+// Trouver un utilisateur par son Microsoft ID
+async function findUserByMicrosoftId(db, microsoftId) {
+  return await db.collection('users').findOne({ microsoftId });
+}
+
+// Créer un utilisateur depuis Microsoft OAuth
+async function createUserFromMicrosoft(db, { microsoftId, email, name, picture }) {
+  const result = await db.collection('users').insertOne({
+    microsoftId,
+    email: email ? email.toLowerCase() : null,
+    name,
+    picture,
+    provider: 'microsoft',
+    createdAt: new Date()
+    // Pas de champ password pour les utilisateurs OAuth
+  });
+
+  return {
+    _id: result.insertedId,
+    microsoftId,
+    email: email ? email.toLowerCase() : null,
+    name,
+    picture,
+    provider: 'microsoft',
+    createdAt: new Date()
+  };
+}
+
 module.exports = {
   findUserByEmail,
   findUserById,
@@ -149,5 +181,7 @@ module.exports = {
   findUserByDiscordId,
   createUserFromDiscord,
   findUserByGithubId,
-  createUserFromGithub
+  createUserFromGithub,
+  findUserByMicrosoftId,
+  createUserFromMicrosoft
 };
